@@ -39,7 +39,7 @@ const OrderScreen = ({ match }) => {
       script.type = "text/javascript";
       script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
       script.asnyc = true;
-      script.onLoad = () => {
+      script.onload = () => {
         setSdkReady(true);
       };
       document.body.appendChild(script);
@@ -65,6 +65,7 @@ const OrderScreen = ({ match }) => {
     dispatch(payOrder(orderId, paymentResult));
   };
 
+  console.log("sdkReady", sdkReady);
   return loading ? (
     <Loader />
   ) : error ? (
