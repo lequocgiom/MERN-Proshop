@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getUserDetails } from "../actions/userActions";
+import { getUserDetails, updateUser } from "../actions/userActions";
 import FormContainer from "../components/FormContainer";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import { USER_UPDATE_RESET } from "../constants/userConstants";
 
 const UserEditScreen = ({ match, location, history }) => {
   const userId = match.params.id;
@@ -15,21 +16,36 @@ const UserEditScreen = ({ match, location, history }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const { loading, error, user } = useSelector(state => state.userDetails);
-
-  const redirect = location.search ? location.search.split("=")[1] : "/";
+  const {
+    loading: loadingUpdate,
+    error: errorUpdate,
+    success: successUpdate
+  } = useSelector(state => state.userUpdate);
 
   useEffect(() => {
-    if (!user.name || user._id !== userId) {
-      dispatch(getUserDetails(userId));
-    } else {
-      setName(user.name);
-      setEmail(user.email);
-      setIsAdmin(user.isAdmin);
+    if (!user) {
+      history.push("/");
     }
-  }, [user, dispatch, userId]);
+    if (successUpdate) {
+      dispatch({
+        type: USER_UPDATE_RESET
+      });
+      history.push("/admin/userlist");
+    } else {
+      if (!user.name || user._id !== userId) {
+        dispatch(getUserDetails(userId));
+      } else {
+        setName(user.name);
+        setEmail(user.email);
+        setIsAdmin(user.isAdmin);
+      }
+    }
+  }, [user, dispatch, userId, successUpdate, history]);
 
   const submitHandler = e => {
     e.preventDefault();
+    // console.log({ _id: userId, name, email, isAdmin });
+    dispatch(updateUser({ _id: userId, name, email, isAdmin }));
   };
   return (
     <>
@@ -39,6 +55,8 @@ const UserEditScreen = ({ match, location, history }) => {
 
       <FormContainer>
         <h1>Edit User</h1>
+        {loadingUpdate && <Loader />}
+        {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
         {loading ? (
           <Loader />
         ) : error ? (
@@ -48,7 +66,7 @@ const UserEditScreen = ({ match, location, history }) => {
             <Form.Group controlId="name">
               <Form.Label>Name</Form.Label>
               <Form.Control
-                type="name"
+                type="text"
                 placeholder="Enter name"
                 value={name}
                 onChange={e => setName(e.target.value)}
