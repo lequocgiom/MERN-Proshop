@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
 import {
-  Row,
+  Button,
+  Card,
   Col,
+  Form,
   Image,
   ListGroup,
-  Card,
-  Button,
-  ListGroupItem,
-  Form,
-} from 'react-bootstrap';
-import Rating from '../components/Rating';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { listProductDetails } from '../actions/productAcions';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
+  Row
+} from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { listProductDetails } from "../actions/productAcions";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import Rating from "../components/Rating";
 
 const ProductScreen = ({ history, match }) => {
   const [qty, setQty] = useState(1);
@@ -26,7 +24,7 @@ const ProductScreen = ({ history, match }) => {
     dispatch(listProductDetails(match.params.id));
   }, [dispatch, match]);
 
-  const productDetails = useSelector((state) => state.productDetails);
+  const productDetails = useSelector(state => state.productDetails);
   const { loading, error, product } = productDetails;
 
   const addToCartHandler = () => {
@@ -81,7 +79,7 @@ const ProductScreen = ({ history, match }) => {
                     <Col>
                       {product.countInStock > 0
                         ? `${product.countInStock} In Stock`
-                        : 'Out Of Stock'}
+                        : "Out Of Stock"}
                     </Col>
                   </Row>
                 </ListGroup.Item>
@@ -94,9 +92,9 @@ const ProductScreen = ({ history, match }) => {
                         <Form.Control
                           as="select"
                           value={qty}
-                          onChange={(e) => setQty(e.target.value)}
+                          onChange={e => setQty(e.target.value)}
                         >
-                          {[...Array(product.countInStock).keys()].map((x) => (
+                          {[...Array(product.countInStock).keys()].map(x => (
                             <option key={x + 1} value={x + 1}>
                               {x + 1}
                             </option>
