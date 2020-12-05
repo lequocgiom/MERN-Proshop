@@ -4,11 +4,17 @@ import { Table, Button, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
-import { listProducts } from "../actions/productAcions";
+import { listProducts, deleteProduct } from "../actions/productAcions";
 const ProductListScreen = ({ history, match }) => {
   const dispatch = useDispatch();
 
   const { loading, error, products } = useSelector(state => state.productList);
+
+  const {
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete
+  } = useSelector(state => state.productDelete);
 
   const { userInfo } = useSelector(state => state.userLogin);
 
@@ -18,11 +24,11 @@ const ProductListScreen = ({ history, match }) => {
     } else {
       history.push("/login");
     }
-  }, [dispatch, history, userInfo]);
+  }, [dispatch, history, userInfo, successDelete]);
 
   const deleteHandler = id => {
     if (window.confirm("Are you sure ?")) {
-      // DELETE PRODUCT
+      dispatch(deleteProduct(id));
     }
   };
 
@@ -37,11 +43,13 @@ const ProductListScreen = ({ history, match }) => {
           <h1>Prodcuts</h1>
         </Col>
         <Col className="text-right">
-          <Button className="my-3" onClick="createProductHandler">
+          <Button className="my-3" onClick={createProductHandler}>
             <i className="fas fa-plus"></i> Create Product
           </Button>
         </Col>
       </Row>
+      {loadingDelete && <Loader />}
+      {errorDelete && <Message variant="danger">{errorDelete}</Message>}
 
       {loading ? (
         <Loader />
